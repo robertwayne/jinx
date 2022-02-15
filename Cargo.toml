@@ -4,7 +4,7 @@ authors = ["Rob Wagner <rob@sombia.com"]
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-description = "CLI tool for quickly populating new local repositories with various files."
+description = "CLI tool for populating fresh repositories with standard files, such as a README, licenses, and language-specific settings files."
 repository = "https://github.com/robertwayne/jinx"
 
 [dependencies]
