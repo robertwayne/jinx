@@ -1,6 +1,6 @@
 # Jinx
 
-A CLI tool for populating fresh repositories with standard files, such as a README, licenses, and
+Jinx is a CLI tool for populating fresh repositories with standard files, such as a README, licenses, and
 language-specific settings files.
 
 *This currently has very minimal support for project environments, namely supporting the types of
