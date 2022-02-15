@@ -9,8 +9,11 @@ handling in the future.*
 
 ## Features
 
-- Supports Rust, TypeScript (Node), and Python project structures.
-- Includes a generic .gitignore, a blank README and CHANGELOG, and .markdownlintignore
+Supports Rust, TypeScript (Node), and Python project structures.
+
+Generates: a skeleton README.md, a generic .gitignore, a blank CHANGELOG.md, a .markdownlintignore, and one or more LICENSE files.
+
+For Rust projects, additionally generates a deny.toml *(for `cargo deny`)* and a rustfmt.toml file *(reorder & squish imports)*.
 
 ## Usage
 
