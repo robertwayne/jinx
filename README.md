@@ -14,7 +14,7 @@ handling in the future.*
 
 ## Usage
 
-Simply run `jinx` in the directory you with to populate with project files.
+Simply run `jinx` in the directory you wish to populate with project files.
 
 Currently does not support supplying a path as an argument.
 
