@@ -98,6 +98,7 @@ impl Project {
         self.generate_gitignore()?;
         self.generate_markdownlintignore()?;
         self.generate_changelog()?;
+        self.generate_gitattributes()?;
 
         println!(
             "{}",
@@ -274,6 +275,25 @@ impl Project {
             .create(true)
             .open(".gitignore")
             .context("Could not open `.gitignore` file.")?;
+
+        output.write_all(template_file.as_bytes())?;
+
+        Ok(())
+    }
+
+    /// Generates a .gitattributes file for the project.
+    fn generate_gitattributes(&self) -> Result<()> {
+        let template_path = get_template_path("gitattributes")
+            .with_context(|| format!("Template `{}.txt` does not exist.", "gitattributes"))?;
+
+        let template_file = read_to_string(template_path)?;
+
+        let mut output = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .create(true)
+            .open(".gitattributes")
+            .context("Could not open `.gitattributes` file.")?;
 
         output.write_all(template_file.as_bytes())?;
 
