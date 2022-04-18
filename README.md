@@ -52,7 +52,7 @@ Currently does not support supplying a path as an argument.
      3. Click `Environment Variables` near the bottom.
      4. Double-click `Path` in the `User variables for x` box.
      5. Click `New`.
-     6. Type in the directory you extracted `jinx` and `templates` to.
+     6. Type in the directory you extracted `jinx` and `.jinx-templates` to.
      7. Click `Ok`.
 
   You're all set! Run `jinx` in a new directory or `jinx --help` to see the help file.
