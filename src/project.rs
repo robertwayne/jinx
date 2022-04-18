@@ -143,13 +143,13 @@ impl Project {
                 match license.as_str() {
                     "mit" => {
                         let formatted_file = self.create_license("mit")?;
-                        let mut output = create_file("docs/MIT-LICENSE")?;
+                        let mut output = create_file("docs/LICENSE-MIT")?;
 
                         output.write_all(formatted_file.as_bytes())?;
                     }
                     "apache" => {
                         let formatted_file = self.create_license("apache")?;
-                        let mut output = create_file("docs/APACHE-LICENSE")?;
+                        let mut output = create_file("docs/LICENSE-APACHE")?;
 
                         output.write_all(formatted_file.as_bytes())?;
                     }
