@@ -17,7 +17,7 @@ pub fn get_template_path(file: &str) -> Result<String> {
     let data = executable_path
         .parent()
         .ok_or_else(|| anyhow::anyhow!("Could not get parent directory"))?
-        .join(format!("templates/{file}.txt"))
+        .join(format!(".jinx-templates/{file}.txt"))
         .display()
         .to_string();
 
@@ -26,7 +26,7 @@ pub fn get_template_path(file: &str) -> Result<String> {
 
     #[cfg(debug_assertions)]
     let data = executable_path
-        .join(format!("templates/{file}.txt"))
+        .join(format!(".jinx-templates/{file}.txt"))
         .display()
         .to_string();
 
