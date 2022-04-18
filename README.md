@@ -1,7 +1,7 @@
 # Jinx
 
-Jinx is a CLI tool for populating fresh repositories with standard files, such as a README, licenses, and
-language-specific settings files.
+Jinx is a CLI tool for populating fresh repositories with the typical files every project creates,
+such as a README, licenses, and language-specific settings files.
 
 *This currently has very minimal support for project environments, namely supporting the types of
 projects I build myself regularly. I do intend on adding more template support and deeper argument
@@ -11,9 +11,11 @@ handling in the future.*
 
 Supports Rust, TypeScript (Node), and Python project structures.
 
-Generates: a skeleton README.md, a generic .gitignore, a blank CHANGELOG.md, a .markdownlintignore, and one or more LICENSE files.
+Generates: a README.md template, a generic .gitignore, a blank CHANGELOG.md, a .markdownlintignore,
+and one or more LICENSE files.
 
-For Rust projects, additionally generates a deny.toml *(for `cargo deny`)* and a rustfmt.toml file *(reorder & squish imports)*.
+For Rust projects, additionally generates a deny.toml *(for `cargo deny`)* and a rustfmt.toml file
+*(reorder & squish imports)*.
 
 ## Usage
 
@@ -30,10 +32,11 @@ Currently does not support supplying a path as an argument.
 
   1. Download the [latest release](https://github.com/robertwayne/jinx/releases).
   2. Extract the files with `tar --xz -xf jinx.tar.xz --directory <wherever you want>`.
-  3. Move to the new directory and grant executable permissions to the binary with `sudo chmod +x
-     jinx`.
-  4. Add the directory location to your PATH so you can run it from anywhere (eg. `export
-     PATH="$PATH/bin:$PATH"`).
+  3. On most distributions, extract it into `/usr/bin` which is already part of your PATH.
+  4. Grant executable permissions to the binary with `sudo chmod +x jinx`.
+  5. (alternatively) You can add the binary to a different directory. Just add that location to your
+     PATH so you can run it from anywhere (eg. `export PATH="$PATH/bin:$PATH"`).
+  
 
   You're all set! Run `jinx` in a new directory or `jinx --help` to see the help file.
 </details>
