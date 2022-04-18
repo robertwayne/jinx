@@ -110,19 +110,23 @@ impl Project {
         Ok(())
     }
 
-    /// Creates a specific license string from a specified template.
-    fn create_license(&self, license: &str) -> Result<String> {
+    /// Replacing template placeholder values with user-defined values.
+    fn search_and_replace(&self, s: String) -> String {
         let current_year = chrono::Local::now().year();
 
+        s.replace("$$PROJECT_NAME", &self.name)
+            .replace("$$CURRENT_YEAR", &current_year.to_string())
+            .replace("$$PROJECT_AUTHOR", &self.author)
+    }
+
+    /// Creates a specific license string from a specified template.
+    fn create_license(&self, license: &str) -> Result<String> {
         let template_path = get_template_path(license)
             .with_context(|| format!("Template `{}.txt` does not exist.", license))?;
 
         let template_file = read_to_string(template_path)?;
 
-        let formatted_file = template_file
-            .replace("$$PROJECT_NAME", &self.name)
-            .replace("$$CURRENT_YEAR", &current_year.to_string())
-            .replace("$$PROJECT_AUTHOR", &self.author);
+        let formatted_file = self.search_and_replace(template_file);
 
         Ok(formatted_file)
     }
@@ -204,9 +208,7 @@ impl Project {
 
         let template_file = read_to_string(template_path)?;
 
-        let formatted_file = template_file
-            .replace("$$PROJECT_NAME", &self.name)
-            .replace("$$PROJECT_AUTHOR", &self.author);
+        let formatted_file = self.search_and_replace(template_file);
 
         let mut output = OpenOptions::new()
             .write(true)
@@ -246,9 +248,7 @@ impl Project {
 
         let template_file = read_to_string(template_path)?;
 
-        let formatted_file = template_file
-            .replace("$$PROJECT_NAME", &self.name)
-            .replace("$$PROJECT_AUTHOR", &self.author);
+        let formatted_file = self.search_and_replace(template_file);
 
         let mut output = OpenOptions::new()
             .write(true)
