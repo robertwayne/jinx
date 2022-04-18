@@ -64,7 +64,7 @@ Currently does not support supplying a path as an argument.
 
 Jinx source code is dual-licensed under either
 
-- **[MIT License](/docs/LICENSE-MIT.md)**
-- **[Apache License, Version 2.0](/docs/LICENSE-APACHE.md)**
+- **[MIT License](/docs/LICENSE-MIT)**
+- **[Apache License, Version 2.0](/docs/LICENSE-APACHE)**
 
 at your option.
