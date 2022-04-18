@@ -1,13 +1,10 @@
-use std::{
-    fs::{read_to_string, OpenOptions},
-    io::prelude::*,
-};
+use std::{fs::read_to_string, io::prelude::*};
 
 use anyhow::{Context, Result};
 use chrono::Datelike;
 use iridescent::{Styled, GREEN};
 
-use crate::utils::{get_template_path, question};
+use crate::utils::{create_file, get_template_path, question};
 
 /// Stateful representation of a new project environment. Primarily used to pass around all the
 /// user-defined values to the various functions without passing tons of arguments.
@@ -125,7 +122,6 @@ impl Project {
             .with_context(|| format!("Template `{}.txt` does not exist.", license))?;
 
         let template_file = read_to_string(template_path)?;
-
         let formatted_file = self.search_and_replace(template_file);
 
         Ok(formatted_file)
@@ -139,12 +135,7 @@ impl Project {
             let formatted_file =
                 self.create_license(&format!("{}{}", &self.licenses.join("_"), "_license"))?;
 
-            let mut output = OpenOptions::new()
-                .write(true)
-                .truncate(true)
-                .create(true)
-                .open("LICENSE")
-                .context("Could not create `LICENSE` file")?;
+            let mut output = create_file("LICENSE")?;
 
             output.write_all(formatted_file.as_bytes())?;
 
@@ -152,25 +143,13 @@ impl Project {
                 match license.as_str() {
                     "mit" => {
                         let formatted_file = self.create_license("mit")?;
-
-                        let mut output = OpenOptions::new()
-                            .write(true)
-                            .truncate(true)
-                            .create(true)
-                            .open("docs/MIT-LICENSE")
-                            .context("Could not open `docs/MIT-LICENSE`")?;
+                        let mut output = create_file("docs/MIT-LICENSE")?;
 
                         output.write_all(formatted_file.as_bytes())?;
                     }
                     "apache" => {
                         let formatted_file = self.create_license("apache")?;
-
-                        let mut output = OpenOptions::new()
-                            .write(true)
-                            .truncate(true)
-                            .create(true)
-                            .open("docs/APACHE-LICENSE")
-                            .context("Could not open `docs/APACHE-LICENSE`")?;
+                        let mut output = create_file("docs/APACHE-LICENSE")?;
 
                         output.write_all(formatted_file.as_bytes())?;
                     }
@@ -181,13 +160,7 @@ impl Project {
             }
         } else {
             let formatted_file = self.create_license(&self.licenses[0])?;
-
-            let mut output = OpenOptions::new()
-                .write(true)
-                .truncate(true)
-                .create(true)
-                .open("LICENSE")
-                .context("Could not open `LICENSE` file")?;
+            let mut output = create_file("LICENSE")?;
 
             output.write_all(formatted_file.as_bytes())?;
         }
@@ -207,15 +180,8 @@ impl Project {
             .with_context(|| format!("Template `{}.txt` does not exist.", &readme_template))?;
 
         let template_file = read_to_string(template_path)?;
-
         let formatted_file = self.search_and_replace(template_file);
-
-        let mut output = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open("README.md")
-            .context("Could not open `README.md` file.")?;
+        let mut output = create_file("README.md")?;
 
         output.write_all(formatted_file.as_bytes())?;
 
@@ -228,13 +194,7 @@ impl Project {
             .with_context(|| format!("Template `{}.txt` does not exist.", "changelog"))?;
 
         let template_file = read_to_string(template_path)?;
-
-        let mut output = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open("CHANGELOG.md")
-            .context("Could not open `CHANGELOG.md` file.")?;
+        let mut output = create_file("CHANGELOG.md")?;
 
         output.write_all(template_file.as_bytes())?;
 
@@ -250,12 +210,7 @@ impl Project {
 
         let formatted_file = self.search_and_replace(template_file);
 
-        let mut output = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open(".markdownlintignore")
-            .context("Could not open `.markdownlintignore` file.")?;
+        let mut output = create_file(".markdownlintignore")?;
 
         output.write_all(formatted_file.as_bytes())?;
 
@@ -268,13 +223,7 @@ impl Project {
             .with_context(|| format!("Template `{}.txt` does not exist.", "gitignore"))?;
 
         let template_file = read_to_string(template_path)?;
-
-        let mut output = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open(".gitignore")
-            .context("Could not open `.gitignore` file.")?;
+        let mut output = create_file(".gitignore")?;
 
         output.write_all(template_file.as_bytes())?;
 
@@ -287,21 +236,15 @@ impl Project {
             .with_context(|| format!("Template `{}.txt` does not exist.", "gitattributes"))?;
 
         let template_file = read_to_string(template_path)?;
-
-        let mut output = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open(".gitattributes")
-            .context("Could not open `.gitattributes` file.")?;
+        let mut output = create_file(".gitattributes")?;
 
         output.write_all(template_file.as_bytes())?;
 
         Ok(())
     }
 
-    /// Generates Rust specific files for the project: deny.toml (for cargo deny) and rustfmt.toml
-    /// for specific cargo fmt settings.
+    /// Generates Rust specific files for the project: deny.toml (for cargo deny) and
+    /// rustfmt.toml for specific cargo fmt settings.
     fn generate_rust_specific_files(&self) -> Result<()> {
         let cargo_deny = get_template_path("deny")
             .with_context(|| format!("Template `{}.txt` does not exist.", "deny"))?;
@@ -309,19 +252,8 @@ impl Project {
         let rust_fmt = get_template_path("rustfmt")
             .with_context(|| format!("Template `{}.txt` does not exist.", "rustfmt"))?;
 
-        let mut cargo_deny_file = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open("deny.toml")
-            .context("Could not open `deny.toml` file.")?;
-
-        let mut rust_fmt_file = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open("rustfmt.toml")
-            .context("Could not open `rustfmt.toml` file.")?;
+        let mut cargo_deny_file = create_file("deny.toml")?;
+        let mut rust_fmt_file = create_file("rustfmt.toml")?;
 
         cargo_deny_file.write_all(read_to_string(cargo_deny)?.as_bytes())?;
         rust_fmt_file.write_all(read_to_string(rust_fmt)?.as_bytes())?;
