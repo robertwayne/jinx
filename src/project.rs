@@ -92,10 +92,11 @@ impl Project {
 
         self.generate_licenses()?;
         self.generate_readme()?;
-        self.generate_gitignore()?;
-        self.generate_markdownlintignore()?;
-        self.generate_changelog()?;
-        self.generate_gitattributes()?;
+
+        self.generate_static_file("gitignore", ".gitignore")?;
+        self.generate_static_file("markdownlintignore", ".markdownlintignore")?;
+        self.generate_static_file("changelog", "CHANGELOG.md")?;
+        self.generate_static_file("gitattributes", ".gitattributes")?;
 
         println!(
             "{}",
@@ -188,75 +189,24 @@ impl Project {
         Ok(())
     }
 
-    /// Generates a CHANGELOG.md file for the project.
-    fn generate_changelog(&self) -> Result<()> {
-        let template_path = get_template_path("changelog")
-            .with_context(|| format!("Template `{}.txt` does not exist.", "changelog"))?;
-
-        let template_file = read_to_string(template_path)?;
-        let mut output = create_file("CHANGELOG.md")?;
-
-        output.write_all(template_file.as_bytes())?;
-
-        Ok(())
-    }
-
-    /// Generates a .markdownlint ignore file for the project.
-    fn generate_markdownlintignore(&self) -> Result<()> {
-        let template_path = get_template_path("markdownlintignore")
-            .with_context(|| format!("Template `{}.txt` does not exist.", "markdownlintignore"))?;
-
-        let template_file = read_to_string(template_path)?;
-
-        let formatted_file = self.search_and_replace(template_file);
-
-        let mut output = create_file(".markdownlintignore")?;
-
-        output.write_all(formatted_file.as_bytes())?;
-
-        Ok(())
-    }
-
-    /// Generates a .gitignore file for the project.
-    fn generate_gitignore(&self) -> Result<()> {
-        let template_path = get_template_path("gitignore")
-            .with_context(|| format!("Template `{}.txt` does not exist.", "gitignore"))?;
-
-        let template_file = read_to_string(template_path)?;
-        let mut output = create_file(".gitignore")?;
-
-        output.write_all(template_file.as_bytes())?;
-
-        Ok(())
-    }
-
-    /// Generates a .gitattributes file for the project.
-    fn generate_gitattributes(&self) -> Result<()> {
-        let template_path = get_template_path("gitattributes")
-            .with_context(|| format!("Template `{}.txt` does not exist.", "gitattributes"))?;
-
-        let template_file = read_to_string(template_path)?;
-        let mut output = create_file(".gitattributes")?;
-
-        output.write_all(template_file.as_bytes())?;
-
-        Ok(())
-    }
-
     /// Generates Rust specific files for the project: deny.toml (for cargo deny) and
     /// rustfmt.toml for specific cargo fmt settings.
     fn generate_rust_specific_files(&self) -> Result<()> {
-        let cargo_deny = get_template_path("deny")
-            .with_context(|| format!("Template `{}.txt` does not exist.", "deny"))?;
+        self.generate_static_file("cargo_deny", "deny.toml")?;
+        self.generate_static_file("rustfmt", "rustfmt.toml")?;
 
-        let rust_fmt = get_template_path("rustfmt")
-            .with_context(|| format!("Template `{}.txt` does not exist.", "rustfmt"))?;
+        Ok(())
+    }
 
-        let mut cargo_deny_file = create_file("deny.toml")?;
-        let mut rust_fmt_file = create_file("rustfmt.toml")?;
+    fn generate_static_file(&self, template_name: &str, output_name: &str) -> Result<()> {
+        let template_path = get_template_path(template_name)
+            .with_context(|| format!("Template `{}.txt` does not exist.", template_name))?;
 
-        cargo_deny_file.write_all(read_to_string(cargo_deny)?.as_bytes())?;
-        rust_fmt_file.write_all(read_to_string(rust_fmt)?.as_bytes())?;
+        let template_file = read_to_string(template_path)?;
+        
+        let mut output = create_file(output_name)?;
+
+        output.write_all(template_file.as_bytes())?;
 
         Ok(())
     }
