@@ -48,9 +48,9 @@ impl Project {
             "  Options".dim(),
             "rust python typescript"
         ));
-        language_text.push(format!("{}: {}", "  Default".dim(), "rust"));
+        language_text.push(format!("{}: {}", "  Default".dim(), "(none)".italic()));
 
-        self.languages = question(&language_text.join("\n"), "rust")?
+        self.languages = question(&language_text.join("\n"), "")?
             .split_whitespace()
             .map(|s| s.to_string())
             .collect();
@@ -79,14 +79,10 @@ impl Project {
 
         for lang in &self.languages {
             match lang.as_str() {
-                "rust" | "rs" => {
-                    self.generate_rust_specific_files()?;
-                }
+                "rust" | "rs" => self.generate_rust_specific_files()?,
                 "typescript" | "ts" => {}
                 "python" | "py" => {}
-                _ => {
-                    println!("Unsupported language: {}", lang);
-                }
+                _ => {}
             }
         }
 
@@ -203,7 +199,7 @@ impl Project {
             .with_context(|| format!("Template `{}.txt` does not exist.", template_name))?;
 
         let template_file = read_to_string(template_path)?;
-        
+
         let mut output = create_file(output_name)?;
 
         output.write_all(template_file.as_bytes())?;
