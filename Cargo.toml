@@ -8,7 +8,7 @@ description = "CLI tool for populating fresh repositories with standard files, s
 repository = "https://github.com/robertwayne/jinx"
 
 [dependencies]
-pico-args = "0.4"
+pico-args = "0.5"
 anyhow = "1"
 chrono = "0.4"
 iridescent = "0.1"
