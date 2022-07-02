@@ -1,13 +1,14 @@
-use std::{fs::read_to_string, io::prelude::*};
+use std::fs::read_to_string;
 
 use anyhow::{Context, Result};
 use chrono::Datelike;
 use iridescent::{Styled, GREEN};
 
-use crate::utils::{create_file, get_template_path, question};
+use crate::utils::{get_template_path, question, try_write};
 
-/// Stateful representation of a new project environment. Primarily used to pass around all the
-/// user-defined values to the various functions without passing tons of arguments.
+/// Stateful representation of a new project environment. Primarily used to pass
+/// around all the user-defined values to the various functions without passing
+/// tons of arguments.
 #[derive(Debug)]
 pub struct Project {
     pub name: String,
@@ -28,7 +29,7 @@ impl Project {
 
     /// Starts the new project creation process in the terminal.
     pub fn start(&mut self) -> Result<()> {
-        println!(
+        eprintln!(
             "{}",
             "Creating new project files...".foreground(GREEN).bold()
         );
@@ -52,7 +53,7 @@ impl Project {
 
         self.languages = question(&language_text.join("\n"), "")?
             .split_whitespace()
-            .map(|s| s.to_string())
+            .map(ToString::to_string)
             .collect();
 
         self.author = question(format!("{}", "Author?".bold()).as_str(), "")?;
@@ -71,15 +72,16 @@ impl Project {
         self.licenses = question(&license_text.join("\n"), "mit")?
             .to_lowercase()
             .split_whitespace()
-            .map(|s| s.to_string())
+            .map(ToString::to_string)
             .collect();
 
-        // We want licenses to be alphabetically sorted to match template naming.
+        // We want licenses to be alphabetically sorted to match template
+        // naming.
         self.licenses.sort();
 
         for lang in &self.languages {
             match lang.as_str() {
-                "rust" | "rs" => self.generate_rust_specific_files()?,
+                "rust" | "rs" => Self::generate_rust_specific_files()?,
                 "typescript" | "ts" => {}
                 "python" | "py" => {}
                 _ => {}
@@ -89,12 +91,12 @@ impl Project {
         self.generate_licenses()?;
         self.generate_readme()?;
 
-        self.generate_static_file("gitignore", ".gitignore")?;
-        self.generate_static_file("markdownlintignore", ".markdownlintignore")?;
-        self.generate_static_file("changelog", "CHANGELOG.md")?;
-        self.generate_static_file("gitattributes", ".gitattributes")?;
+        Self::generate_static_file("gitignore", ".gitignore")?;
+        Self::generate_static_file("markdownlintignore", ".markdownlintignore")?;
+        Self::generate_static_file("changelog", "CHANGELOG.md")?;
+        Self::generate_static_file("gitattributes", ".gitattributes")?;
 
-        println!(
+        eprintln!(
             "{}",
             "Project files created successfully!"
                 .foreground(GREEN)
@@ -105,7 +107,7 @@ impl Project {
     }
 
     /// Replacing template placeholder values with user-defined values.
-    fn search_and_replace(&self, s: String) -> String {
+    fn search_and_replace(&self, s: &str) -> String {
         let current_year = chrono::Local::now().year();
 
         s.replace("$$PROJECT_NAME", &self.name)
@@ -119,7 +121,7 @@ impl Project {
             .with_context(|| format!("Template `{}.txt` does not exist.", license))?;
 
         let template_file = read_to_string(template_path)?;
-        let formatted_file = self.search_and_replace(template_file);
+        let formatted_file = self.search_and_replace(&template_file);
 
         Ok(formatted_file)
     }
@@ -132,34 +134,26 @@ impl Project {
             let formatted_file =
                 self.create_license(&format!("{}{}", &self.licenses.join("_"), "_license"))?;
 
-            let mut output = create_file("LICENSE")?;
-
-            output.write_all(formatted_file.as_bytes())?;
+            try_write("LICENSE", &formatted_file)?;
 
             for license in &self.licenses {
                 match license.as_str() {
                     "mit" => {
                         let formatted_file = self.create_license("mit")?;
-                        let mut output = create_file("docs/LICENSE-MIT")?;
-
-                        output.write_all(formatted_file.as_bytes())?;
+                        try_write("docs/LICENSE-MIT", &formatted_file)?;
                     }
                     "apache" => {
                         let formatted_file = self.create_license("apache")?;
-                        let mut output = create_file("docs/LICENSE-APACHE")?;
-
-                        output.write_all(formatted_file.as_bytes())?;
+                        try_write("docs/LICENSE-APACHE", &formatted_file)?;
                     }
                     _ => {
-                        println!("Unsupported license: {}", license);
+                        eprintln!("Unsupported license: {}", license);
                     }
                 }
             }
         } else {
             let formatted_file = self.create_license(&self.licenses[0])?;
-            let mut output = create_file("LICENSE")?;
-
-            output.write_all(formatted_file.as_bytes())?;
+            try_write("LICENSE", &formatted_file)?;
         }
 
         Ok(())
@@ -177,32 +171,31 @@ impl Project {
             .with_context(|| format!("Template `{}.txt` does not exist.", &readme_template))?;
 
         let template_file = read_to_string(template_path)?;
-        let formatted_file = self.search_and_replace(template_file);
-        let mut output = create_file("README.md")?;
+        let formatted_file = self.search_and_replace(&template_file);
 
-        output.write_all(formatted_file.as_bytes())?;
-
-        Ok(())
-    }
-
-    /// Generates Rust specific files for the project: deny.toml (for cargo deny) and
-    /// rustfmt.toml for specific cargo fmt settings.
-    fn generate_rust_specific_files(&self) -> Result<()> {
-        self.generate_static_file("cargo_deny", "deny.toml")?;
-        self.generate_static_file("rustfmt", "rustfmt.toml")?;
+        try_write("README.md", &formatted_file)?;
 
         Ok(())
     }
 
-    fn generate_static_file(&self, template_name: &str, output_name: &str) -> Result<()> {
+    /// Generates Rust specific files for the project: deny.toml (for cargo
+    /// deny) and rustfmt.toml for specific cargo fmt settings.
+    fn generate_rust_specific_files() -> Result<()> {
+        Self::generate_static_file("cargo_deny", "deny.toml")?;
+        Self::generate_static_file("rustfmt", "rustfmt.toml")?;
+
+        Ok(())
+    }
+
+    /// Generates files from a static template (e.g. .gitignore,
+    /// .markdownlintignore, etc.)
+    fn generate_static_file(template_name: &str, output_name: &str) -> Result<()> {
         let template_path = get_template_path(template_name)
             .with_context(|| format!("Template `{}.txt` does not exist.", template_name))?;
 
         let template_file = read_to_string(template_path)?;
 
-        let mut output = create_file(output_name)?;
-
-        output.write_all(template_file.as_bytes())?;
+        try_write(output_name, &template_file)?;
 
         Ok(())
     }

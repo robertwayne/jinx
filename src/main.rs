@@ -26,12 +26,11 @@ struct Args {
 }
 
 fn main() -> Result<()> {
-    let args = match parse_args() {
-        Ok(v) => v,
-        Err(_) => {
-            println!("{HELP}");
-            exit(0);
-        }
+    let args = if let Ok(v) = parse_args() {
+        v
+    } else {
+        eprintln!("{}", HELP);
+        exit(1);
     };
 
     let Args { _template: _ } = args;
