@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use chrono::Datelike;
 use iridescent::{Styled, GREEN};
 
-use crate::utils::{create_file, get_template_path, question};
+use crate::utils::{get_template_path, question, try_write};
 
 /// Stateful representation of a new project environment. Primarily used to pass around all the
 /// user-defined values to the various functions without passing tons of arguments.
@@ -132,34 +132,26 @@ impl Project {
             let formatted_file =
                 self.create_license(&format!("{}{}", &self.licenses.join("_"), "_license"))?;
 
-            let mut output = create_file("LICENSE")?;
-
-            output.write_all(formatted_file.as_bytes())?;
+            try_write("LICENSE", &formatted_file)?;
 
             for license in &self.licenses {
                 match license.as_str() {
                     "mit" => {
                         let formatted_file = self.create_license("mit")?;
-                        let mut output = create_file("docs/LICENSE-MIT")?;
-
-                        output.write_all(formatted_file.as_bytes())?;
+                        try_write("docs/LICENSE-MIT", &formatted_file)?;
                     }
                     "apache" => {
                         let formatted_file = self.create_license("apache")?;
-                        let mut output = create_file("docs/LICENSE-APACHE")?;
-
-                        output.write_all(formatted_file.as_bytes())?;
+                        try_write("docs/LICENSE-APACHE", &formatted_file)?;
                     }
                     _ => {
-                        println!("Unsupported license: {}", license);
+                        eprintln!("Unsupported license: {}", license);
                     }
                 }
             }
         } else {
             let formatted_file = self.create_license(&self.licenses[0])?;
-            let mut output = create_file("LICENSE")?;
-
-            output.write_all(formatted_file.as_bytes())?;
+            try_write("LICENSE", &formatted_file)?;
         }
 
         Ok(())
@@ -177,10 +169,9 @@ impl Project {
             .with_context(|| format!("Template `{}.txt` does not exist.", &readme_template))?;
 
         let template_file = read_to_string(template_path)?;
-        let formatted_file = self.search_and_replace(template_file);
-        let mut output = create_file("README.md")?;
+        let formatted_file = self.search_and_replace(&template_file);
 
-        output.write_all(formatted_file.as_bytes())?;
+        try_write("README.md", &formatted_file)?;
 
         Ok(())
     }
@@ -200,9 +191,7 @@ impl Project {
 
         let template_file = read_to_string(template_path)?;
 
-        let mut output = create_file(output_name)?;
-
-        output.write_all(template_file.as_bytes())?;
+        try_write(output_name, &template_file)?;
 
         Ok(())
     }
