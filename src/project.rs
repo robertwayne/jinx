@@ -29,26 +29,15 @@ impl Project {
 
     /// Starts the new project creation process in the terminal.
     pub fn start(&mut self) -> Result<()> {
-        eprintln!(
-            "{}",
-            "Creating new project files...".foreground(GREEN).bold()
-        );
+        eprintln!("{}", "Creating new project files...".foreground(GREEN).bold());
 
         self.name = question(format!("{}", "Project Name?".bold()).as_str(), "")?;
 
         // Ask the user to specify the language(s) for the project.
         let mut language_text = Vec::with_capacity(3);
 
-        language_text.push(format!(
-            "{} {}",
-            "Language(s)".bold(),
-            "(space delimited)?".italic()
-        ));
-        language_text.push(format!(
-            "{}: {}",
-            "  Options".dim(),
-            "rust python typescript"
-        ));
+        language_text.push(format!("{} {}", "Language(s)".bold(), "(space delimited)?".italic()));
+        language_text.push(format!("{}: {}", "  Options".dim(), "rust python typescript"));
         language_text.push(format!("{}: {}", "  Default".dim(), "(none)".italic()));
 
         self.languages = question(&language_text.join("\n"), "")?
@@ -61,11 +50,7 @@ impl Project {
         // Ask the user to specify the license(s) for the project.
         let mut license_text = Vec::with_capacity(3);
 
-        license_text.push(format!(
-            "{} {}",
-            "Licenses".bold(),
-            "(space delimited)?".italic()
-        ));
+        license_text.push(format!("{} {}", "Licenses".bold(), "(space delimited)?".italic()));
         license_text.push(format!("{}: {}", "  Options".dim(), "mit apache"));
         license_text.push(format!("{}: {}", "  Default".dim(), "mit"));
 
@@ -96,12 +81,7 @@ impl Project {
         Self::generate_static_file("changelog", "CHANGELOG.md")?;
         Self::generate_static_file("gitattributes", ".gitattributes")?;
 
-        eprintln!(
-            "{}",
-            "Project files created successfully!"
-                .foreground(GREEN)
-                .bold()
-        );
+        eprintln!("{}", "Project files created successfully!".foreground(GREEN).bold());
 
         Ok(())
     }

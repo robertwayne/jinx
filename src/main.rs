@@ -53,9 +53,7 @@ fn parse_args() -> Result<Args> {
         exit(0);
     }
 
-    let args = Args {
-        _template: "".to_string(),
-    };
+    let args = Args { _template: "".to_string() };
 
     let remaining = pargs.finish();
     if !remaining.is_empty() {

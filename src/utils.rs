@@ -27,10 +27,7 @@ pub fn get_template_path(file: &str) -> Result<String> {
     let executable_path = std::env::current_dir()?;
 
     #[cfg(debug_assertions)]
-    let data = executable_path
-        .join(format!(".jinx-templates/{file}.txt"))
-        .display()
-        .to_string();
+    let data = executable_path.join(format!(".jinx-templates/{file}.txt")).display().to_string();
 
     Ok(data)
 }
