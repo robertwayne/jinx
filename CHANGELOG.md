@@ -1,5 +1,9 @@
 # Change Log
 
+## 2022.09.03 - v0.2.1
+
+- Update the generated `rustfmt.toml` files to include `use_small_heuristics = "Max"` by default.
+
 ## 2022.05.18 - v0.2
 
 - Renamed `templates` folder to `.jinx-templates` to avoid naming conflicts.
