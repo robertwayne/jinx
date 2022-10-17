@@ -1,7 +1,7 @@
 [package]
 name = "jinx"
-authors = ["Rob Wagner <rob@sombia.com"]
-version = "0.2.0"
+authors = ["Rob Wagner <rob@sombia.com>"]
+version = "0.3.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "CLI tool for populating fresh repositories with standard files, such as a README, licenses, and language-specific settings files."
