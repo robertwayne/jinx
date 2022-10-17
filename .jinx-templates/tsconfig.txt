@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "lib": ["esnext", "DOM"],
+
+        "rootDir": "src",
+        "outDir": "dist",
+
+        "strict": true,
+        "alwaysStrict": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+
+        "esModuleInterop": true,
+
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noFallthroughCasesInSwitch": true,
+
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "downlevelIteration": true,
+        "declaration": true,
+
+        "pretty": true,
+        "types": ["vitest/importMeta", "vite/client"]
+    },
+    "include": ["src/**/*", "*.d.ts"],
+    "exclude": ["node_modules"]
+}
