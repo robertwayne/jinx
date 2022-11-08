@@ -11,7 +11,7 @@ repository = "https://github.com/robertwayne/jinx"
 pico-args = "0.5"
 anyhow = "1"
 chrono = "0.4"
-iridescent = "0.1"
+iridescent = "0.2"
 
 [profile.release]
 opt-level = 3
